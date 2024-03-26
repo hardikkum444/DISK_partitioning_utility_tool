@@ -1,12 +1,16 @@
 import subprocess
 import getpass
 
+GREEN = "\033[92m"
+RED = "\033[91m"
+RESET = "\033[0m"
+
 def listing():
     try:
         output = subprocess.check_output(["lsblk","-l"]).decode("utf-8")
         lines = output.split('\n')
 
-        print("Your mounted disks")
+        print("\nYour mounted disks")
         
         count = 0
         for line in lines:
@@ -23,8 +27,8 @@ def listing():
         print(f"Error: {e}")
 
 def what():
-    print("1>format the disk\n2>create new partition\n3>unmount disk\n4>mount disk")
-    choice = input("please choose an option")
+    print("\n1>format the disk\n2>create new partition\n3>unmount disk\n4>mount disk")
+    choice = input("please choose an option: ")
     
     if(choice == "1"):
         print("make sure you have unmounted your disk first by chosing option 3")
@@ -36,16 +40,28 @@ def what():
         
         subprocess.run(["sudo", "fdisk", "/dev/sda"], input =f"{sudo}\n{commands}", stderr = subprocess.PIPE, text=True, check=True)
         
-        print("new partition created")
+        print(f"{GREEN}new partition created{RESET}")
 
         name = input("new name: ");
         subprocess.run(["sudo","mkfs.exfat","-n",name,f"/dev/sda{part_no}"])
-        print("format completed, ready to go")
-        print("now mounting to /mnt")
+        print(f"{GREEN}format completed, ready to go{RESET}")
+        print(f"{GREEN}now mounting to /mnt{RESET}")
 
         subprocess.run(["sudo","mount",f"/dev/sda{part_no}","/media/man44"])
-        print("disk has been mounted")
+        print(f"{GREEN}disk has been mounted{RESET}")
 
+    if(choice == "3"):
+        
+        try:
+            partition_no = input("partition no: ")
+            result =  subprocess.run(["sudo", "umount", f"/dev/sda{partition_no}"])
+            if result.returncode==0:
+                print(f"{GREEN}Successfuly unmounted{RESET}")
+            else:
+                print(f"{RED}Unsuccessful pls check partition number{RESET}")
+        
+        except subprocess.CalledProcessError as e:
+            print(f"{RED}Unsuccessful{RESET}")
 
 def main():
     listing()
