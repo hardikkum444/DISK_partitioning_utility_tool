@@ -8,6 +8,7 @@ RESET = "\033[0m"
 def listing():
     try:
         output = subprocess.check_output(["lsblk","-l"]).decode("utf-8")
+        print(f"{RED}{output}{RESET}")
         lines = output.split('\n')
 
         print("\nYour mounted disks")
@@ -52,7 +53,11 @@ def what():
         sudo = getpass.getpass("please enter your root pass: ")
         
         part_no = input("partition number: ")
-        commands = f"g\nn\n{part_no}\n\n\n\nY\nw"
+        size = input("Partition size ex: +1G (100 for entire disk space): ")
+        if(size == '100'):
+            size = "\n"
+
+        commands = f"g\nn\n{part_no}\n\n{size}\nY\nw"
         
         subprocess.run(["sudo", "fdisk", "/dev/sda"], input =f"{sudo}\n{commands}", stderr = subprocess.PIPE, text=True, check=True)
         
