@@ -28,7 +28,8 @@ def listing():
         print(f"Error: {e}")
 
 def what():
-    print("\n1>format the disk\n2>create new partition and format\n3>unmount disk\n4>mount disk")
+    print("Please unmount disk before performing any action")
+    print("\n1>format the disk\n2>create new partition and format\n3>unmount disk\n4>mount disk\n5>Encrypt")
     choice = input("please choose an option: ")
     
     if(choice == "1"):
@@ -51,13 +52,18 @@ def what():
         print("make sure you have unmounted your disk first by chosing option 3")
         
         sudo = getpass.getpass("please enter your root pass: ")
+        delet = input("Do you want to delete a previous partition? (y/n) ")
         
         part_no = input("partition number: ")
         size = input("Partition size ex: +1G (100 for entire disk space): ")
         if(size == '100'):
             size = "\n"
 
-        commands = f"g\nn\n{part_no}\n\n{size}\nY\nw"
+        if (delet == 'y'):
+            which = input("which partition would you like to delete? ")
+            commands = f"g\nd\n{which}\nn\n{part_no}\n\n{size}\nY\nw"
+        else:
+            commands = f"g\nn\n{part_no}\n\n{size}\nY\nw"
         
         subprocess.run(["sudo", "fdisk", "/dev/sda"], input =f"{sudo}\n{commands}", stderr = subprocess.PIPE, text=True, check=True)
         
@@ -121,7 +127,7 @@ def what():
 
         except subprocess.CalledProcessError as e:
             print(f"{RED}Unsuccessful{RESET}")
-            
+
 
 def main():
     listing()
@@ -129,3 +135,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#deleting partitions
+#display disk usage
+#better picking functionality
