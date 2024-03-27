@@ -52,12 +52,12 @@ def what():
         print("make sure you have unmounted your disk first by chosing option 3")
         
         sudo = getpass.getpass("please enter your root pass: ")
-        delet = input("Do you want to delete a previous partition? (y/n) ")
         
-        part_no = input("partition number: ")
+        part_no = input("partition number (creation): ")
         size = input("Partition size ex: +1G (100 for entire disk space): ")
         if(size == '100'):
             size = "\n"
+        delet = input("Do you want to delete a previous partition? (y/n) ")
 
         if (delet == 'y'):
             which = input("which partition would you like to delete? ")
@@ -128,6 +128,55 @@ def what():
         except subprocess.CalledProcessError as e:
             print(f"{RED}Unsuccessful{RESET}")
 
+
+    if(choice == '5'):
+        try:
+            disk = input("disk and partition (sda1): ")
+            
+            output = subprocess.run(["sudo","cryptsetup","luksFormat",f"/dev/{disk}"])
+            if output.returncode == 0:
+                print(f"{GREEN}disk hase been encrypted{RESET}")
+            else:
+                print(f"{RED}Unsuccessful{RESET}")
+
+            temp_name = input("Enter temp name: ")
+            
+            output2 = subprocess.run(["sudo","cryptsetup","open",f"/dev/{disk}", temp_name])
+            if output2.returncode == 0:
+                print(f"{GREEN}disk hase been opened{RESET}")
+            else:
+                print(f"{RED}Unsuccessful{RESET}")
+           
+
+            file_type = input("file system type: ")
+            new_name = input("new name: ")
+            output3 = subprocess.run(["sudo", f"mkfs.{file_type}","-n",f"{new_name}",f"/dev/mapper/{temp_name}"])
+            if output3.returncode==0:
+                print(f"{GREEN}Successfuly formated to {file_type}{RESET}")
+            else:
+                print(f"{RED}Unsuccessful{RESET}")
+
+            print(f"{GREEN}Now mounting{RESET}")
+
+            
+            user_name = input("Username: ")
+            print(f"Where to mount:\n1>/media/{user_name}\n2>/mnt")
+            ch = input("choose: ")
+            if(ch=='1'):
+                loc = f"/media/{user_name}"
+            else:
+                loc = "/mnt"
+            output4 = subprocess.run(["sudo","mount",f"/dev/mapper/{temp_name}",f"{loc}"])
+            if output4.returncode==0:
+                print(f"{GREEN}Successfuly mounted{RESET}")
+            else:
+                print(f"{GREEN}Unsuccessful{RESET}")
+
+        except subprocess.CalledProcessError as e:
+              print(f"{RED}Unsuccessful{RESET}")
+
+
+            
 
 def main():
     listing()
