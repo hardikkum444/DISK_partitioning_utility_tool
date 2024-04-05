@@ -58,7 +58,7 @@ sudo fdisk /dev/sda
 you may have to delete the prev partition using 'd'
 
 
-## ENCRYPTION of a disk
+## Encryption of a disk
 
 ```bash
 sudo cryptsetup luksFormat /dev/sda1
@@ -70,7 +70,7 @@ now to open the disk to mount (done before manually mounting)
 also this step is automatically done when you enter the pen drive 
 but after encryption if you want to access then youll have to manually open then mount
 
-## STEPS TO FOLLOW FOR THE FIRST TIME
+## Steps to follow for the first time (encryption)
 
 ```bash
 #OPEN->
@@ -90,7 +90,7 @@ sudo cryptsetup close /dev/mapper/any_name
 as it will automatically be done by the os 
 instead of 'any_name' youll see something like luks9894932942093 (something big and long :|)
 
-## REMOVING THE ENCRYPTION:
+## Removing the encryption
 ```bash
 sudo cryptsetup luksOpen /dev/sda1 my_drive
 sudo cryptsetup luksRemove /dev/sda1
